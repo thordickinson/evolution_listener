@@ -26,7 +26,7 @@ MIMETYPE_EXTENSIONS = {
 }
 
 
-def save_media_in_folder(url: str, account_id: str, chat_id: str, message_id: str, mimetype: Optional[str] = None) -> str:
+def __download_media(url: str, account_id: str, chat_id: str, message_id: str, mimetype: Optional[str] = None) -> str:
     """
     Descarga un archivo desde la URL y lo guarda en:
       BASE_MEDIA_PATH/account_id/chat_id/message_id/
@@ -65,3 +65,46 @@ def save_media_in_folder(url: str, account_id: str, chat_id: str, message_id: st
 
     logger.info(f"Archivo y metadata guardados en: {target_dir}")
     return target_dir
+
+
+
+def save_media_from_event(event: dict) -> Optional[str]:
+    """
+    Extrae la URL, account_id, chat_id y message_id de un evento
+    y descarga el archivo en BASE_MEDIA_PATH/account_id/chat_id/message_id.ext.
+
+    Devuelve la ruta completa del archivo guardado o None si no hay media.
+    """
+    try:
+        data = event.get("data", {})
+        message = data.get("message", {})
+
+        # detecta el tipo de mensaje con media
+        media_message = None
+        mimetype = None
+        for media_type in ["imageMessage", "videoMessage", "documentMessage"]:
+            if media_type in message:
+                media_message = message[media_type]
+                break
+
+        if not media_message or "url" not in media_message:
+            logger.info("No se encontró contenido multimedia con URL en el evento")
+            return None
+
+        url = media_message["url"]
+        mimetype = media_message.get("mimetype")
+        message_id = data["key"]["id"]
+        account_id = event["sender"]
+        chat_id = data["key"]["remoteJid"]
+
+        return __download_media(
+            url=url,
+            account_id=account_id,
+            chat_id=chat_id,
+            message_id=message_id,
+            mimetype=mimetype,
+        )
+
+    except Exception as e:
+        logger.exception(f"Error al procesar media del evento: {e}")
+        return None

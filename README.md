@@ -46,7 +46,7 @@ Copia los archivos (excluyendo `__pycache__` y `.venv`) con `rsync`:
 sudo rsync -av --progress \
   --exclude '__pycache__' \
   --exclude '.venv' \
-  listener/ /opt/harmony/listener/
+  evolution_listener/ /opt/harmony/listener/
 ```
 
 Luego dale la propiedad al usuario `harmony`:
