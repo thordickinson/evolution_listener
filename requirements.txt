@@ -1,0 +1,6 @@
+fastapi
+psycopg[binary]
+dotenv
+uvicorn
+pyYAML
+requests

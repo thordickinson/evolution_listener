@@ -1,0 +1,9 @@
+filters:
+  573244850520@s.whatsapp.net:
+    conversations:
+      - 120363039398879578@g.us
+      - 120363420580912039@g.us
+
+logging:
+  log_ignored_chats: true
+  log_accepted_chats: true
