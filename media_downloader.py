@@ -7,7 +7,8 @@ from typing import Optional
 
 logger = logging.getLogger(__name__)
 
-BASE_MEDIA_PATH = "/var/lib/harmony/media"
+# lee la variable de entorno, o usa la ruta por defecto
+BASE_MEDIA_PATH = os.environ.get("HARMONY_MEDIA_PATH", "/var/lib/harmony/media")
 
 MIMETYPE_EXTENSIONS = {
     "image/jpeg": ".jpg",
@@ -28,7 +29,7 @@ MIMETYPE_EXTENSIONS = {
 def save_media_in_folder(url: str, account_id: str, chat_id: str, message_id: str, mimetype: Optional[str] = None) -> str:
     """
     Descarga un archivo desde la URL y lo guarda en:
-      /base/account_id/chat_id/message_id/
+      BASE_MEDIA_PATH/account_id/chat_id/message_id/
     con archivo + metadata.json
 
     Devuelve la ruta al directorio del mensaje.
@@ -52,7 +53,6 @@ def save_media_in_folder(url: str, account_id: str, chat_id: str, message_id: st
         for chunk in resp.iter_content(1024):
             f.write(chunk)
 
-    # escribir metadata
     metadata = {
         "mimetype": mimetype,
         "size": os.path.getsize(filepath),
